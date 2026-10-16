@@ -1,0 +1,17 @@
+# Core
+numpy>=1.24
+torch>=2.3
+torchaudio>=2.3
+soundfile>=0.12
+
+# Biomarkers
+speechbrain>=1.0          # ECAPA speaker embedding
+faster-whisper>=1.1       # transcript (base.en, CPU int8)
+jiwer>=3.0                # word error rate + alignment
+praat-parselmouth>=0.4.5  # pitch
+silero-vad>=5.1           # voice activity detection / pauses
+
+# App
+streamlit>=1.40           # st.audio_input
+plotly>=5.20
+anthropic>=0.40           # optional friendlier summary

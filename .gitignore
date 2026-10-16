@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Downloaded pretrained models and trained classifiers
+models/
+
+# Voice data (personal recordings and the SVD corpus)
+data/
