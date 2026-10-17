@@ -1,6 +1,6 @@
 """Transcript, speaking rate, reading errors and filler words, from faster-whisper.
 
-Test:  python -m features.transcript path/to/clip.wav [text_id]
+Test:  python -m voice_checker.features.transcript path/to/clip.wav [text_id]
 """
 import re
 from functools import lru_cache
@@ -8,7 +8,7 @@ from functools import lru_cache
 import jiwer
 from faster_whisper import WhisperModel
 
-import config
+from voice_checker import config
 
 
 @lru_cache(maxsize=None)
@@ -87,8 +87,8 @@ def transcript_features(wav, expected_text):
 if __name__ == "__main__":
     import sys
 
-    from audio.quality import load_audio
-    from texts import TEXTS
+    from voice_checker.audio.quality import load_audio
+    from voice_checker.texts import TEXTS
 
     text_id = sys.argv[2] if len(sys.argv) > 2 else next(iter(TEXTS))
     result = transcript_features(load_audio(sys.argv[1]), TEXTS[text_id]["text"])

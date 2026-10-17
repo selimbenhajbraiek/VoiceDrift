@@ -1,6 +1,6 @@
 """Test lab: run every VoiceDrift module on one recording and see each result. Nothing is saved.
 
-Opened from the sidebar of the main app (streamlit run app.py).
+Opened from the sidebar of the main app (streamlit run backend/streamlit_app/app.py).
 """
 import os
 import sys
@@ -10,12 +10,12 @@ import plotly.graph_objects as go
 import streamlit as st
 import torch
 
-import config
-import storage
-import widgets
-from audio.quality import QualityError, check_quality, load_audio
-from features import embedding, pauses, pitch, transcript
-from texts import TEXTS
+from voice_checker import config
+from voice_checker import storage
+from backend.streamlit_app import widgets
+from voice_checker.audio.quality import QualityError, check_quality, load_audio
+from voice_checker.features import embedding, pauses, pitch, transcript
+from voice_checker.texts import TEXTS
 
 SAMPLES = {  # synthetic voices reading "The river market" (they say "gray" where the text says "bushy")
     "Sample A · voice 1": config.ROOT / "samples" / "sample_a.wav",
@@ -80,7 +80,7 @@ def choose_recording():
         st.audio(str(clip))
         st.caption(f"All samples read “{TEXTS[SAMPLE_TEXT]['title']}” in a synthetic voice. Samples A and B "
                    "say “gray” where the text says “bushy”, so you'll see one misread word. "
-                   "Run python experiments.py to add test-bench clips here.")
+                   "Run python -m voice_checker.experiments to add test-bench clips here.")
         text_id = SAMPLE_TEXT
     else:
         text_id = st.selectbox("Text being read", list(TEXTS), format_func=lambda t: TEXTS[t]["title"])

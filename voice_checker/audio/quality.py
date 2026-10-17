@@ -1,6 +1,6 @@
 """Load a recording as 16 kHz mono and reject clips that can't be analyzed reliably.
 
-Test:  python -m audio.quality path/to/clip.wav
+Test:  python -m voice_checker.audio.quality path/to/clip.wav
 """
 import numpy as np
 import parselmouth
@@ -8,8 +8,8 @@ import soundfile as sf
 import torch
 import torchaudio
 
-import config
-from features.pauses import speech_segments
+from voice_checker import config
+from voice_checker.features.pauses import speech_segments
 
 NO_SPEECH = (
     "We couldn't hear any speech. Check that the right microphone is selected and "

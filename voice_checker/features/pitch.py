@@ -1,11 +1,11 @@
 """Pitch, from Praat (parselmouth): mean F0 and F0 variability over voiced frames.
 
-Test:  python -m features.pitch path/to/clip.wav
+Test:  python -m voice_checker.features.pitch path/to/clip.wav
 """
 import numpy as np
 import parselmouth
 
-import config
+from voice_checker import config
 
 
 def pitch_features(wav):
@@ -23,6 +23,6 @@ def pitch_features(wav):
 if __name__ == "__main__":
     import sys
 
-    from audio.quality import load_audio
+    from voice_checker.audio.quality import load_audio
 
     print(pitch_features(load_audio(sys.argv[1])))

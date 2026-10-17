@@ -5,8 +5,8 @@ https://zenodo.org/records/16874898. Each condition is one big zip; instead of d
 whole zips, this reads each zip's index over HTTP range requests and fetches only the
 <session>-a_n.nsp files (about 150 KB each), plus the zip's overview.csv (speaker ids).
 
-Run:  python -m screening.download_svd E:/VoiceDrift-data/svd            (vowel /a/, normal pitch)
-      python -m screening.download_svd E:/VoiceDrift-data/svd --phrase   (the spoken sentence)
+Run:  python -m voice_checker.screening.download_svd E:/VoiceDrift-data/svd            (vowel /a/, normal pitch)
+      python -m voice_checker.screening.download_svd E:/VoiceDrift-data/svd --phrase   (the spoken sentence)
 """
 import io
 import struct
@@ -19,6 +19,8 @@ from pathlib import Path
 import numpy as np
 import requests
 import soundfile as sf
+
+from voice_checker import config
 
 BASE = "https://zenodo.org/records/16874898/files/"
 CATEGORIES = {  # Zenodo zip -> output folder (the user's target conditions, plus healthy speakers)

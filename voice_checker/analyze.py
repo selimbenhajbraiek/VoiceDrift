@@ -1,15 +1,15 @@
 """Run the full pipeline on one recording: quality check, then every biomarker.
 
-Test:  python analyze.py path/to/clip.wav [text_id]
+Test:  python -m voice_checker.analyze path/to/clip.wav [text_id]
 """
 from datetime import datetime
 
-from audio.quality import check_quality
-from features.embedding import embed
-from features.pauses import pause_features
-from features.pitch import pitch_features
-from features.transcript import transcript_features
-from texts import TEXTS
+from voice_checker.audio.quality import check_quality
+from voice_checker.features.embedding import embed
+from voice_checker.features.pauses import pause_features
+from voice_checker.features.pitch import pitch_features
+from voice_checker.features.transcript import transcript_features
+from voice_checker.texts import TEXTS
 
 
 def analyze(source, text_id):

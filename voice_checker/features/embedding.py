@@ -1,6 +1,6 @@
 """Voice signature: a 192-dim SpeechBrain ECAPA speaker embedding.
 
-Test:  python -m features.embedding path/to/clip.wav [other_clip.wav]
+Test:  python -m voice_checker.features.embedding path/to/clip.wav [other_clip.wav]
 """
 from functools import lru_cache
 
@@ -9,8 +9,8 @@ import torch
 from speechbrain.inference.speaker import EncoderClassifier
 from speechbrain.utils.fetching import LocalStrategy
 
-import config
-from features.pauses import speech_segments
+from voice_checker import config
+from voice_checker.features.pauses import speech_segments
 
 
 @lru_cache(maxsize=None)
@@ -46,7 +46,7 @@ def embed(wav):
 if __name__ == "__main__":
     import sys
 
-    from audio.quality import load_audio
+    from voice_checker.audio.quality import load_audio
 
     vecs = [embed(load_audio(path)) for path in sys.argv[1:3]]
     print(f"dim={vecs[0].shape[0]}  norm={np.linalg.norm(vecs[0]):.3f}  first 5: {np.round(vecs[0][:5], 4)}")

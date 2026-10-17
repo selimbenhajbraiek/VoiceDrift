@@ -1,7 +1,7 @@
 """UI pieces shared by the main page (app.py) and the test lab (test_lab.py)."""
 import html
 
-from features.transcript import align
+from voice_checker.features.transcript import align
 
 CSS = """
 <style>

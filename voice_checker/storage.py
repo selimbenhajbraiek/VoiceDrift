@@ -1,8 +1,8 @@
-"""Storage: one JSON file per user in data/users/, holding all of their sessions."""
+"""Storage: one JSON file per user in voice_checker/data/users/, holding all of their sessions."""
 import json
 import re
 
-import config
+from voice_checker import config
 
 
 def user_file(name):

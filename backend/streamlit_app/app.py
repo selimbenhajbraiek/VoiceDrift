@@ -1,24 +1,26 @@
 """VoiceDrift: read a short text aloud and see how your voice compares with your own baseline.
 
-Run:  streamlit run app.py   (the sidebar also links to the Test lab page)
+Run:  streamlit run backend/streamlit_app/app.py   (the sidebar also links to the Test lab page)
 """
 import html
 import os
 from datetime import datetime
+import sys
 
+from pathlib import Path
 import plotly.graph_objects as go
 import streamlit as st
 
-import config
-import drift
-import explain
-import storage
-import widgets
-from analyze import analyze
-from audio.quality import QualityError
-from demo import TEXT_ID as DEMO_TEXT_ID
-from demo import load_demo
-from texts import TEXTS
+# Streamlit runs this file as a script, so put the repository on the import path for `backend` and `voice_checker`.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from backend.streamlit_app import widgets
+from voice_checker import config, drift, explain, storage
+from voice_checker.analyze import analyze
+from voice_checker.audio.quality import QualityError
+from voice_checker.demo import TEXT_ID as DEMO_TEXT_ID
+from voice_checker.demo import load_demo
+from voice_checker.texts import TEXTS
 
 STATUS_COLORS = {"Stable": "#0ca30c", "Watch": "#fab219", "Changed": "#d03b3b"}
 STATUS_BANNERS = {"Stable": (st.success, "✅"), "Watch": (st.warning, "👀"), "Changed": (st.error, "⚠️")}
@@ -131,7 +133,7 @@ def sidebar():
         st.warning("**Research prototype, not a medical device.** VoiceDrift describes changes "
                    "in your voice; it does not diagnose anything.", icon="⚠️")
         st.info("**Audio is processed locally** on this computer and never uploaded. Only the "
-                "measurements are saved, in `data/users/`.", icon="🔒")
+                "measurements are saved, in `voice_checker/data/users/`.", icon="🔒")
         use_claude = False
         if os.environ.get("ANTHROPIC_API_KEY"):
             use_claude = st.toggle("Friendlier summary by Claude", value=True)

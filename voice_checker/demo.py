@@ -1,15 +1,15 @@
 """Demo data: a fake user with 3 baseline readings and 4 readings that drift.
 
-Run:  python demo.py   (or use the "Load demo data" button in the app)
+Run:  python -m voice_checker.demo   (or use the "Load demo data" button in the app)
 """
 from datetime import datetime, timedelta
 
 import numpy as np
 
-import config
-import storage
-from features.transcript import align, normalize
-from texts import TEXTS
+from voice_checker import config
+from voice_checker import storage
+from voice_checker.features.transcript import align, normalize
+from voice_checker.texts import TEXTS
 
 TEXT_ID = "market"
 
@@ -79,7 +79,7 @@ def load_demo():
 
 
 if __name__ == "__main__":
-    import drift
+    from voice_checker import drift
 
     user = load_demo()
     _, rows = drift.score_history(storage.sessions_for_text(user, TEXT_ID))

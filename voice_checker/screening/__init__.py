@@ -1,9 +1,9 @@
 """Research screening: how much a recording resembles the condition group of a research dataset.
 
 Not a diagnosis. The models are trained on few speakers, can't tell which condition a
-person has, and make mistakes. Train them with `python -m screening.train ...`.
+person has, and make mistakes. Train them with `python -m voice_checker.screening.train ...`.
 """
-import config
+from voice_checker import config
 
 MODEL_DIR = config.MODELS_DIR / "screening"
 

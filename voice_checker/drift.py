@@ -1,7 +1,7 @@
 """Personal drift: how far a reading is from the same user's baseline for the same text."""
 import numpy as np
 
-import config
+from voice_checker import config
 
 SCALARS = list(config.STD_FLOORS)  # scalar biomarkers that get a z-score
 

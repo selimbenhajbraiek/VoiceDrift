@@ -1,14 +1,14 @@
 """Train and test a research screening model on TORGO or the Saarbrücken Voice Database.
 
-Run:  python -m screening.train svd   E:/VoiceDrift-data/svd     (voice-disorder-like voice, "aaah")
-      python -m screening.train torgo E:/VoiceDrift-data/torgo   (dysarthria-like speech, reading)
+Run:  python -m voice_checker.screening.train svd   E:/VoiceDrift-data/svd     (voice-disorder-like voice, "aaah")
+      python -m voice_checker.screening.train torgo E:/VoiceDrift-data/torgo   (dysarthria-like speech, reading)
 
 Testing is speaker-independent: no speaker is ever in both the training and the test part.
 Training weights balance the sexes within each class, so the model can't simply learn
 "female voice" when one class has more women; results are also reported per sex. A
 recording-setup check trains the same model on the silent parts of each clip only: if
 silence alone separates the groups, the scores partly reflect the recording setup.
-Outputs go to models/screening/.
+Outputs go to voice_checker/models/screening/.
 """
 import argparse
 import time
@@ -23,11 +23,11 @@ from sklearn.model_selection import LeaveOneGroupOut, StratifiedGroupKFold, cros
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-import config
-from audio.quality import load_audio
-from screening import MODEL_DIR, TASKS
-from screening.datasets import LOADERS
-from screening.features import feature_vector, silence_vector
+from voice_checker import config
+from voice_checker.audio.quality import load_audio
+from voice_checker.screening import MODEL_DIR, TASKS
+from voice_checker.screening.datasets import LOADERS
+from voice_checker.screening.features import feature_vector, silence_vector
 
 SETUP_WARNING_AUC = 0.75
 FEATURE_SETS = {  # columns of screening.features.feature_vector

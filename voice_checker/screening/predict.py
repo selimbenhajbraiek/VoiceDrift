@@ -4,9 +4,10 @@ from functools import lru_cache
 import joblib
 import numpy as np
 
-import config
-from screening import MODEL_DIR, TASKS
-from screening.features import feature_vector
+from voice_checker import config
+from voice_checker.audio.quality import check_quality, check_vowel
+from voice_checker.screening import MODEL_DIR, TASKS
+from voice_checker.screening.features import feature_vector
 
 WINDOW_S = 3.0  # TORGO clips are short utterances, so a long reading is scored in pieces
 VOWEL_S = 2.0   # SVD vowels are short, so only the steady middle of an "aaah" is used

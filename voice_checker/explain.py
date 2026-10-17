@@ -7,8 +7,8 @@ import os
 
 import anthropic
 
-import config
-import drift
+from voice_checker import config
+from voice_checker import drift
 
 MEANING = {  # what each biomarker measures, for the results table
     "embedding": "How much your overall voice sounds like your baseline recordings",

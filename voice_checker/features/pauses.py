@@ -1,6 +1,6 @@
 """Pauses, from silero-vad: how often the reader stops and for how long.
 
-Test:  python -m features.pauses path/to/clip.wav
+Test:  python -m voice_checker.features.pauses path/to/clip.wav
 """
 import warnings
 from functools import lru_cache
@@ -8,7 +8,7 @@ from functools import lru_cache
 import torch
 from silero_vad import get_speech_timestamps, load_silero_vad
 
-import config
+from voice_checker import config
 
 
 @lru_cache(maxsize=None)
@@ -49,6 +49,6 @@ def pause_features(wav):
 if __name__ == "__main__":
     import sys
 
-    from audio.quality import load_audio
+    from voice_checker.audio.quality import load_audio
 
     print(pause_features(load_audio(sys.argv[1])))

@@ -10,9 +10,9 @@ import torch
 import torchaudio
 from parselmouth.praat import call
 
-import config
-from features.embedding import embed
-from features.pauses import speech_segments
+from voice_checker import config
+from voice_checker.features.embedding import embed
+from voice_checker.features.pauses import speech_segments
 
 VOICE_QUALITY = ["Average pitch (Hz)", "Pitch variability (semitones)", "Jitter (%)", "Shimmer (%)", "Harmonics-to-noise (dB)"]
 

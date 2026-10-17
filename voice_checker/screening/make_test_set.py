@@ -10,7 +10,7 @@ Each folder gets *_aaah.wav files (for the "Hold aaah" tab) and/or *_reading.wav
 for every remaining file.
 
 Needs E:/VoiceDrift-data/librispeech/LibriSpeech/dev-clean (https://www.openslr.org/12).
-Run:  python -m screening.make_test_set E:/VoiceDrift-data
+Run:  python -m voice_checker.screening.make_test_set E:/VoiceDrift-data
 """
 import csv
 import io
@@ -22,9 +22,10 @@ import numpy as np
 import requests
 import soundfile as sf
 
-from audio.quality import QualityError, check_quality, check_vowel, load_audio
-from screening import predict
-from screening.download_svd import open_zip, read_nsp
+from voice_checker import config
+from voice_checker.audio.quality import QualityError, check_quality, check_vowel, load_audio
+from voice_checker.screening import predict
+from voice_checker.screening.download_svd import open_zip, read_nsp
 
 UNSEEN = {  # Zenodo zip -> file label (conditions not used in training)
     "Morbus Parkinson.zip": "parkinsons",

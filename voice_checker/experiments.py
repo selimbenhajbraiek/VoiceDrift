@@ -10,7 +10,7 @@ Results:
   - one app user per voice, e.g. "Zira (test voice)", to browse in the app
   - the audio in data/experiments/<voice>/, selectable in the Test lab
 
-Run:  python experiments.py [Zira Hazel ...]   (Windows only; about 1 minute per voice)
+Run:  python -m voice_checker.experiments [Zira Hazel ...]   (Windows only; about 1 minute per voice)
 """
 import html
 import subprocess
@@ -26,12 +26,12 @@ import torch
 import torchaudio
 from parselmouth.praat import call
 
-import config
-import drift
-import storage
-from analyze import analyze
-from audio.quality import QualityError, load_audio
-from texts import TEXTS
+from voice_checker import config
+from voice_checker import drift
+from voice_checker import storage
+from voice_checker.analyze import analyze
+from voice_checker.audio.quality import QualityError, load_audio
+from voice_checker.texts import TEXTS
 
 TEXT_ID = "market"
 OUT_DIR = config.ROOT / "data" / "experiments"

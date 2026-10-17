@@ -6,10 +6,10 @@ import html
 
 import streamlit as st
 
-from audio.quality import QualityError, check_quality, check_vowel
-from screening import TASKS, predict
-from screening.features import VOICE_QUALITY, voice_quality
-from texts import TEXTS
+from voice_checker.audio.quality import QualityError
+from voice_checker.screening import READING_TASKS, TASKS, describe, predict
+from voice_checker.screening.features import VOICE_QUALITY, voice_quality
+from voice_checker.texts import TEXTS
 
 AUDIO_TYPES = ["wav", "flac", "ogg", "mp3"]
 READING_TASKS = ["torgo", "svd_phrase"]  # both run on one reading
