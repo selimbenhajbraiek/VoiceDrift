@@ -1,13 +1,14 @@
-"""VoiceDrift: read a short text aloud and see how your voice compares with your own baseline.
+"""VoiceDrift: record your voice and see which voice condition it is most similar to (screening_page.py, the
+home page), or track how it changes against your own baseline (main_page below).
 
 Run:  streamlit run backend/streamlit_app/app.py   (the sidebar also links to the Test lab page)
 """
 import html
 import os
-from datetime import datetime
 import sys
-
+from datetime import datetime
 from pathlib import Path
+
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -265,7 +266,7 @@ def results_section(name, text_id, sessions, use_claude):
 def main_page():
     """The VoiceDrift flow: name and text, recording, then results."""
     use_claude = sidebar()
-    st.title("🎙️ VoiceDrift")
+    st.title("📈 Track your voice")
     st.caption("Read a short text aloud. VoiceDrift compares your voice with your own baseline and tells you what changed.")
 
     name = st.text_input("Your name", key="user_name", placeholder="e.g. Sam").strip()
@@ -282,7 +283,7 @@ def main_page():
 st.set_page_config(page_title="VoiceDrift", page_icon="🎙️", layout="centered")
 st.markdown(widgets.CSS, unsafe_allow_html=True)
 st.navigation([
-    st.Page(main_page, title="VoiceDrift", icon="🎙️", default=True),
-    st.Page("screening_page.py", title="Voice screening (research)", icon="🩺"),
+    st.Page("screening_page.py", title="Voice check", icon="🩺", default=True),
+    st.Page(main_page, title="Track your voice", icon="📈"),
     st.Page("test_lab.py", title="Test lab", icon="🧪"),
 ]).run()
