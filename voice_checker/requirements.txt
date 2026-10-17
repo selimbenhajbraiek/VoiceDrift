@@ -1,8 +1,11 @@
+# Voice checker: audio, voice features, screening models, drift tracking
+
 # Core
 numpy>=1.24
 torch>=2.3
 torchaudio>=2.3
 soundfile>=0.12
+python-dotenv>=1.0        # reads DATASETS_DIR / ANTHROPIC_API_KEY from the repo's .env
 
 # Biomarkers
 speechbrain>=1.0          # ECAPA speaker embedding
@@ -11,8 +14,7 @@ jiwer>=3.0                # word error rate + alignment
 praat-parselmouth>=0.4.5  # pitch
 silero-vad>=5.1           # voice activity detection / pauses
 scikit-learn>=1.4         # research screening models (includes joblib)
+requests>=2.31            # dataset downloads (screening.download_svd, make_test_set)
 
-# App
-streamlit>=1.40           # st.audio_input
-plotly>=5.20
-anthropic>=0.40           # optional friendlier summary
+# Optional friendlier summary in the drift tracker
+anthropic>=0.40

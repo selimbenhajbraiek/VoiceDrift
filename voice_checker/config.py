@@ -1,5 +1,8 @@
-"""Central settings for VoiceDrift: models, thresholds, z-score floors and paths."""
+"""Voice checker settings: models, thresholds, z-score floors and paths. Server settings live in backend/settings.py."""
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # --- Models -----------------------------------------------------------------
 ECAPA_MODEL = "speechbrain/spkrec-ecapa-voxceleb"  # 192-dim speaker embedding
@@ -57,8 +60,13 @@ LABELS = {
 }
 
 # --- Paths ------------------------------------------------------------------
-ROOT = Path(__file__).resolve().parent
-USERS_DIR = ROOT / "data" / "users"   # one JSON per user
-MODELS_DIR = ROOT / "models"          # downloaded model weights
+ROOT = Path(__file__).resolve().parent   # voice_checker/
+REPO_ROOT = ROOT.parent
+load_dotenv(REPO_ROOT / ".env")          # DATASETS_DIR and the optional ANTHROPIC_API_KEY
+
+USERS_DIR = ROOT / "data" / "users"      # one JSON per user: the drift tracker's reading history
+MODELS_DIR = ROOT / "models"             # downloaded model weights and the trained screening models
+# Research datasets (SVD, TORGO, LibriSpeech, test uploads): about 10 GB, so they live outside the repo.
+DATASETS_DIR = Path(os.environ.get("DATASETS_DIR", "E:/VoiceDrift-data"))
 
 DEMO_USER = "Demo User"

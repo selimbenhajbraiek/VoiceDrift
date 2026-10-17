@@ -2,8 +2,14 @@
 __pycache__/
 *.pyc
 
-# Downloaded pretrained models and trained classifiers
+# Secrets and machine-specific settings (.env.example is the committed template)
+.env
+.env.*
+!.env.example
+
+# Downloaded pretrained models and trained classifiers (voice_checker/models/)
 models/
 
-# Voice data (personal recordings and the SVD corpus)
+# Voice data and app data (voice_checker/data/, backend/data/: reading histories, test-bench clips,
+# the SQLite database, certificates, email outbox)
 data/
