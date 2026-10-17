@@ -146,7 +146,8 @@ def score_file(path):
     prob = predict.score(task, wav)
     t = predict.load(task)["thresholds"]
     band = "High" if prob >= t["high"] else "Some" if prob >= t["some"] else "Low"
-    closest = predict.condition_breakdown(task, wav)[0][0] if band != "Low" else ""
+    conditions = [r[0] for r in predict.condition_breakdown(task, wav) if r[0] != "Healthy"]
+    closest = conditions[0] if band != "Low" and conditions else ""  # the one name the app shows
     return task, band, prob, closest
 
 
@@ -170,7 +171,7 @@ def results(root):
 
 
 if __name__ == "__main__":
-    data = Path(sys.argv[1] if len(sys.argv) > 1 else "E:/VoiceDrift-data")
+    data = Path(sys.argv[1]) if len(sys.argv) > 1 else config.DATASETS_DIR
     root = data / "test_uploads"
     shutil.rmtree(root, ignore_errors=True)  # rebuild from scratch (only this generated folder)
     print("Unseen SVD conditions…")
