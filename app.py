@@ -197,7 +197,13 @@ def all_scores_table(sessions, rows):
     return table
 
 
-def results_section(text_id, sessions, use_claude):
+def reading_label(session, row):
+    """'Oct 12, 09:06 · Watch', plus the test-bench label when there is one."""
+    text = f"{when(session['timestamp']):%b %d, %H:%M} · {row['status']}"
+    return text + (f" · {session['label']}" if session.get("label") else "")
+
+
+def results_section(name, text_id, sessions, use_claude):
     """Baseline progress, or the status, explanation, transcript and trend charts."""
     st.subheader("2 · Your results")
     expected = TEXTS[text_id]["text"]
@@ -213,7 +219,10 @@ def results_section(text_id, sessions, use_claude):
         return
 
     baseline, rows = scored
-    session, row = sessions[-1], rows[-1]
+    pick = st.selectbox("Reading to show", range(len(sessions)), index=len(sessions) - 1,
+                        key=f"pick_{name}_{text_id}_{len(sessions)}",
+                        format_func=lambda i: reading_label(sessions[i], rows[i]))
+    session, row = sessions[pick], rows[pick]
     if row["is_baseline"]:
         st.success(f"**Baseline complete ({config.BASELINE_N}/{config.BASELINE_N}).** Your next "
                    "reading of this text will be compared with it.", icon="📏")
@@ -221,7 +230,7 @@ def results_section(text_id, sessions, use_claude):
         banner, icon = STATUS_BANNERS[row["status"]]
         banner(f"**{row['status']}** · drift index {row['index']:.1f} "
                f"(Stable < {config.WATCH_INDEX:g}, Watch < {config.CHANGED_INDEX:g}, Changed above)", icon=icon)
-        persistent = drift.is_persistent(rows)
+        persistent = drift.is_persistent(rows[: pick + 1])
         if persistent:
             st.error(f"**Persistent change:** your last {config.PERSIST_K} readings were all Watch or "
                      "Changed. Consider resting, and if it continues, checking in with a healthcare "
@@ -265,12 +274,13 @@ def main_page():
 
     record_section(name, text_id)
     st.divider()
-    results_section(text_id, storage.sessions_for_text(storage.load_user(name), text_id), use_claude)
+    results_section(name, text_id, storage.sessions_for_text(storage.load_user(name), text_id), use_claude)
 
 
 st.set_page_config(page_title="VoiceDrift", page_icon="🎙️", layout="centered")
 st.markdown(widgets.CSS, unsafe_allow_html=True)
 st.navigation([
     st.Page(main_page, title="VoiceDrift", icon="🎙️", default=True),
+    st.Page("screening_page.py", title="Voice screening (research)", icon="🩺"),
     st.Page("test_lab.py", title="Test lab", icon="🧪"),
 ]).run()
