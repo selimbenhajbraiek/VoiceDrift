@@ -42,9 +42,9 @@ def make_model():
     return make_pipeline(SimpleImputer(), StandardScaler(), LogisticRegression(C=0.05, max_iter=5000))
 
 
-def extract(task, items, refresh=False):
-    """Features, silence features, labels, groups, sexes and ages, cached in models/screening/<task>_features.npz."""
-    cache = MODEL_DIR / f"{task}_features.npz"
+def extract(task, items, refresh=False, cache_name=None):
+    """Features, silence features, labels, groups, sexes and ages, cached in voice_checker/models/screening/<cache_name>_features.npz."""
+    cache = MODEL_DIR / f"{cache_name or task}_features.npz"
     if cache.exists() and not refresh:
         d = np.load(cache, allow_pickle=False)
         return {k: d[k] for k in d.files}
@@ -144,6 +144,11 @@ CONDITION_GROUPS = {  # SVD folders -> groups of the per-condition breakdown (re
     "laryngitis": "Laryngitis",
     "nodules": "Nodules or polyps",
     "polyp": "Nodules or polyps",
+    # Only in the --naming-extra data: they help name a voice, but trained into the healthy-vs-unusual
+    # model they lowered its matched AUC from 0.81 to 0.72 (2026-10-17).
+    "reinke_edema": "Reinke's edema",
+    "functional_dysphonia": "Functional dysphonia",
+    "hyperfunctional_dysphonia": "Functional dysphonia",  # overlapping diagnoses that sound alike
 }
 
 
@@ -228,6 +233,9 @@ def main():
     parser.add_argument("--refresh", action="store_true", help="re-extract features instead of using the cache")
     parser.add_argument("--features", choices=[*FEATURE_SETS, "best"], default="best",
                         help="which features the model uses; 'best' tries each and keeps the best matched AUC")
+    parser.add_argument("--naming-extra", metavar="FOLDER",
+                        help="more condition folders used only by the condition-naming model, "
+                             "e.g. E:/VoiceDrift-data/svd_extra (SVD tasks)")
     args = parser.parse_args()
 
     items = LOADERS[args.task](args.root)
@@ -264,7 +272,12 @@ def main():
 
     condition_groups = None
     if args.task.startswith("svd"):
-        condition_groups, section = train_condition_groups(d, start, stop)
+        naming = d
+        if args.naming_extra:  # extra conditions for naming only; the healthy-vs-unusual model above is unchanged
+            extra = extract(args.task, LOADERS[args.task](args.naming_extra), args.refresh, cache_name=f"{args.task}_extra")
+            naming = {k: np.concatenate([d[k], extra[k]]) for k in d}
+            print(f"  naming model: +{len(extra['y'])} recordings from {args.naming_extra}", flush=True)
+        condition_groups, section = train_condition_groups(naming, start, stop)
         text += section
 
     model = make_model().fit(d["X"][:, start:stop], d["y"], logisticregression__sample_weight=weights)

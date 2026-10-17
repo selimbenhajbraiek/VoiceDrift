@@ -31,6 +31,8 @@ CATEGORIES = {  # Zenodo zip -> output folder (the user's target conditions, plu
     "Laryngitis.zip": "laryngitis",
     "GERD.zip": "reflux",
 }
+# Tried on 2026-10-17 and dropped: adding Reinke's edema and functional/hyperfunctional dysphonia
+# lowered the reading model's matched AUC from 0.81 to 0.72 and flagged healthy readers.
 WORKERS = 1        # Zenodo rate-limits guests, so one paced connection is fastest overall
 MIN_INTERVAL_S = 1.0
 
@@ -107,7 +109,7 @@ def fetch(name, members, out_dir):
                 sf.write(target, samples, rate, subtype="PCM_16")
 
 
-def download_category(name, folder, root, suffix="-a_n.nsp"):
+def download_category(name, folder, root, suffix="-a_n.nsp", skip_sessions=()):
     """All recordings ending in `suffix` of one condition, plus its overview.csv, into root/folder/."""
     out_dir = Path(root) / folder
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -115,7 +117,7 @@ def download_category(name, folder, root, suffix="-a_n.nsp"):
         names = z.namelist()
         if "overview.csv" in names:
             (out_dir / "overview.csv").write_bytes(z.read("overview.csv"))
-    members = [m for m in names if m.endswith(suffix)]
+    members = [m for m in names if m.endswith(suffix) and m.split("/")[0] not in skip_sessions]
     todo = [m for m in members if not (out_dir / (Path(m).stem + ".wav")).exists()]
     print(f"{folder}: {len(members)} recordings, {len(todo)} to download", flush=True)
     chunks = [todo[i::WORKERS] for i in range(WORKERS)]
@@ -126,7 +128,7 @@ def download_category(name, folder, root, suffix="-a_n.nsp"):
 
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    root = args[0] if args else "data/svd"
+    root = args[0] if args else str(config.DATASETS_DIR / "svd")
     suffix = "-phrase.nsp" if "--phrase" in sys.argv else "-a_n.nsp"
     start = time.time()
     for name, folder in CATEGORIES.items():
