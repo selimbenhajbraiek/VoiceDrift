@@ -73,6 +73,80 @@ python analyze.py clip.wav market              # the whole pipeline on one clip
 python demo.py                                 # (re)create the demo user and print its scores
 ```
 
+### Test bench: many voices, controlled changes
+
+```bash
+python experiments.py            # all English Windows voices (or: python experiments.py Zira)
+```
+
+For each installed English text-to-speech voice it records a 3-reading baseline with small
+day-to-day variation, then one reading per condition (another normal day, background noise,
+phone mic, slower, long pauses, lower pitch, flat melody, hesitant, tired, someone else) and
+checks each against what should happen. Results: a scorecard in `data/experiments/report.md`,
+an app user per voice (e.g. **Zira (test voice)**, browse with *Reading to show*), and the clips
+in the Test lab's sample list. It uses every English voice that Windows desktop text-to-speech
+(System.Speech) can see; on the development laptop that's Zira and Hazel.
+
+This tests **change detection**, not disease detection: VoiceDrift only compares a person
+with their own baseline and never diagnoses.
+
+## Research screening (optional)
+
+The **🩺 Voice screening (research)** page compares one recording with research datasets:
+
+| Check | You record | Compared with | Looks for |
+| --- | --- | --- | --- |
+| Speech check | the reading | TORGO (dysarthria from cerebral palsy or ALS, plus controls) | dysarthria-like speech: slow, slurred, effortful |
+| Voice check | a steady “aaah”, 3–5 s | Saarbrücken Voice Database (voice disorders, plus healthy) | voice-disorder-like voice: hoarse, breathy, unstable |
+
+It reports how similar a recording is to each dataset's condition group and how accurate the
+model was on speakers it never heard. It **never names a disease**: TORGO has about 15 speakers
+and no Parkinson's, MS, stroke or brain-injury speakers, and audio alone can't tell nodules from
+polyps. Every result points to a doctor or speech-language therapist for a real assessment.
+
+**1 · Get the data.** On the development laptop the data lives on drive `E:` in `E:\VoiceDrift-data\`.
+
+- **Saarbrücken Voice Database** (official full copy on Zenodo, CC BY 4.0, credit required):
+  `python -m screening.download_svd E:/VoiceDrift-data/svd` fetches only the vowel /a/ at normal
+  pitch from the healthy, nodules, polyp, vocal-fold-paralysis, laryngitis and reflux zips (via HTTP
+  range requests, so ~150 KB per recording instead of ~10 GB of zips), converts `.nsp` to WAV and
+  keeps each zip's `overview.csv` (speaker ids). It is paced for Zenodo's rate limit and resumable.
+- **TORGO** (<http://www.cs.toronto.edu/~complingweb/data/TORGO/torgo.html>, free for academic
+  non-profit use, cite the TORGO paper): download `F`, `FC`, `M`, `MC` `.tar.bz2` (9.6 GB in total),
+  then extract only the array-microphone WAVs:
+
+  ```bash
+  cd E:/VoiceDrift-data
+  for f in F FC M MC; do tar -xjf torgo_archives/$f.tar.bz2 -C torgo --wildcards "*/wav_arrayMic/*"; done
+  ```
+
+**2 · Train.** Features are cached in `models/screening/`, so a rerun is quick.
+
+```bash
+python -m screening.train svd   E:/VoiceDrift-data/svd
+python -m screening.train torgo E:/VoiceDrift-data/torgo
+```
+
+Each run prints and saves a report (`models/screening/<task>_report.md`) with speaker-independent
+results (no speaker in both training and test) and a **recording-setup check**: the same model
+trained on the silent parts of each clip only. If silence alone separates the groups, the model
+is partly learning the microphone and room, and the page warns about it.
+
+**Results on 2026-10-17** (speaker-independent, controls matched for age and sex; full reports in
+`models/screening/*_report.md`):
+
+| Model | Records | Matched AUC | Closest group right (chance 25%) | Status |
+| --- | --- | --- | --- | --- |
+| Voice check from reading (`svd_phrase`) | reading | 0.81 | 42% | on; normal test readings all scored Low |
+| Voice check (`svd`) | “aaah” | 0.70 | 30% | on |
+| Speech check (`torgo`) | reading | 0.76 (women 0.44) | – | **off**: failed the recording-setup check and scored every normal reading ~1.0 |
+
+**Test files to upload:** `python -m screening.make_test_set E:/VoiceDrift-data` builds
+`E:\VoiceDrift-data\test_uploads\` with conditions the models never saw (Parkinson's, ALS, Reinke's
+edema, spasmodic dysphonia, vocal fold cancer, functional dysphonia, dysarthrophonia), healthy
+English readers (LibriSpeech dev-clean, CC BY 4.0) and dysarthric TORGO speakers, plus a few
+training examples, and writes `RESULTS.md` with what the app says for each file.
+
 ## Project layout
 
 | File | What it does |
@@ -90,6 +164,9 @@ python demo.py                                 # (re)create the demo user and pr
 | `explain.py` | Template summary, optional Claude summary with fallback |
 | `storage.py` | One JSON file per user in `data/users/` |
 | `demo.py` | Demo user: 3 baseline + 4 drifting sessions |
+| `experiments.py` | Test bench: TTS voices × controlled changes → scorecard |
+| `screening/` | Research screening: dataset loaders, features, training, prediction |
+| `screening_page.py` | Voice screening (research) page: speech check and “aaah” voice check |
 
 ## Tuning
 
@@ -121,6 +198,14 @@ microphone or room**, so keep the setup the same across readings.
 | 2:45 | "Everything runs on a laptop CPU, in Python, with open models: SpeechBrain, Whisper, Praat and Silero. Next: more texts, longer baselines and a study with clinicians." | Optional: open *All readings as a table*. |
 
 Backup moment if time allows: record 3 seconds and show the quality check rejecting it.
+
+## Data credits
+
+- **TORGO**: Rudzicz, F., Namasivayam, A. K., & Wolff, T. (2012). The TORGO database of acoustic
+  and articulatory speech from speakers with dysarthria. *Language Resources and Evaluation*, 46(4).
+  Free for academic (non-profit) use.
+- **Saarbrücken Voice Database**: Pützer, M., & Barry, W. J., former Institute of Phonetics, Saarland
+  University. Zenodo, doi:10.5281/zenodo.16874898, CC BY 4.0.
 
 ## Limitations
 
