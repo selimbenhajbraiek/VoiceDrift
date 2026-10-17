@@ -239,7 +239,7 @@ def laptop_app(addresses):
     @needs("laptop")
     async def new_check(request):
         """A voice check recorded or uploaded in the browser on this laptop."""
-        return await receive_check(request, request.state.user, "This laptop")
+        return await receive_check(request, request.state.user, notify.LAPTOP_DEVICE)
 
     @needs("laptop")
     async def get_check(request):

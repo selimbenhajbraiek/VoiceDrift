@@ -11,11 +11,12 @@ from email.message import EmailMessage
 from email.utils import formatdate, make_msgid, parseaddr
 
 from backend import settings
+from voice_checker.screening import CONDITION_TEXT
 from voice_checker.texts import TEXTS
 
 APP_URL = settings.FRONTEND_URL   # the Next.js app
-FOOTER = ("VoiceDrift is a research prototype, not a medical device. Your recording was checked on your laptop and "
-          "then deleted; this email only contains the result.")
+LAPTOP_DEVICE = "This laptop"     # the device name of checks recorded in the web app on the laptop
+FOOTER = "VoiceDrift is a research tool, not a medical device. Your recording was deleted after the check."
 
 
 def smtp_settings():
@@ -67,22 +68,36 @@ def what_was_recorded(check):
 
 
 def result_email(name, check):
-    """(subject, body) for a finished check, flagged or not."""
+    """(subject, body) for a finished check, worded for where it was recorded (phone or laptop) and its result."""
     result = check["result"]
     when = datetime.fromtimestamp(check["created"]).strftime("%d %b %Y at %H:%M")
-    subject = ("VoiceDrift: your voice check found something to look at" if result["flagged"]
-               else "VoiceDrift: your voice check result is ready")
-    body = (f"Hi {name},\n\n"
-            f"Your laptop checked {what_was_recorded(check)}, sent from {check['device'] or 'your phone'} on {when}.\n\n"
-            f"{result['headline']}.\n\n"
-            f"{result['detail']}\n\n"
-            f"See this result and all your checks in VoiceDrift: {APP_URL}/checks/{check['id']}\n\n"
-            f"{FOOTER}\n")
+    phone = check["device"] if check["device"] != LAPTOP_DEVICE else None
+    condition = CONDITION_TEXT.get(result.get("condition"), "a voice problem")
+    if result["flagged"] and phone:
+        subject = "VoiceDrift: your voice may need a check-up"
+        lines = [f"We checked the voice recording you made with your phone ({phone}) on {when}.",
+                 "We found signs that your voice may have a problem. "
+                 f"It sounded similar to the voices of people with {condition}.",
+                 "We recommend that you visit a doctor, such as an ear, nose and throat (ENT) specialist, "
+                 "to check your voice.",
+                 "This is not a diagnosis: only a doctor can tell you what is going on."]
+    elif result["flagged"]:
+        subject = "VoiceDrift: your voice check found signs worth checking"
+        lines = [f"Your voice check on your laptop on {when} found signs worth checking.",
+                 f"Your voice sounded similar to people with {condition}.",
+                 "This is not a diagnosis. If you are worried about your voice, see a doctor."]
+    else:
+        subject = "VoiceDrift: your voice sounds healthy"
+        source = f"with your phone ({phone})" if phone else "on your laptop"
+        lines = [f"We checked {what_was_recorded(check)}, recorded {source} on {when}.",
+                 "Your voice sounded healthy: we found no signs of a voice problem."]
+    body = (f"Hi {name},\n\n" + "\n\n".join(lines) +
+            f"\n\nSee the result: {APP_URL}/checks/{check['id']}\n\n{FOOTER}\n")
     return subject, body
 
 
 def test_email(name):
     """(subject, body) for the dashboard's "Send a test email" button."""
     return ("VoiceDrift: test email",
-            f"Hi {name},\n\nThis is a test from your VoiceDrift dashboard. The results of your voice checks "
-            f"will arrive like this one.\n\n{APP_URL}\n\n{FOOTER}\n")
+            f"Hi {name},\n\nThis is a test email from VoiceDrift. Your voice check results will arrive like this.\n\n"
+            f"{APP_URL}\n\n{FOOTER}\n")
