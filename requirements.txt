@@ -10,6 +10,7 @@ faster-whisper>=1.1       # transcript (base.en, CPU int8)
 jiwer>=3.0                # word error rate + alignment
 praat-parselmouth>=0.4.5  # pitch
 silero-vad>=5.1           # voice activity detection / pauses
+scikit-learn>=1.4         # research screening models (includes joblib)
 
 # App
 streamlit>=1.40           # st.audio_input
