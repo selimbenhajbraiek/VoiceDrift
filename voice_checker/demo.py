@@ -48,8 +48,8 @@ def fake_embedding(base, drift_dir, noise, step, rng):
     return v / np.linalg.norm(v)
 
 
-def load_demo():
-    """Overwrite the demo user with fresh demo sessions and return it."""
+def demo_sessions():
+    """3 baseline and 4 drifting demo readings of TEXT_ID, oldest first (session dicts like analyze() returns)."""
     rng = np.random.default_rng(7)
     base, drift_dir = rng.normal(size=(2, 192))
     base /= np.linalg.norm(base)
@@ -73,7 +73,12 @@ def load_demo():
             "quality": {"duration_s": round(len(normalize(text)) / wpm * 60, 1), "snr_db": 32.0, "clipped_pct": 0.0},
             "embedding": [round(float(x), 6) for x in fake_embedding(base, drift_dir, noise, i, rng)],
         })
-    user = {"name": config.DEMO_USER, "sessions": sessions}
+    return sessions
+
+
+def load_demo():
+    """Overwrite the demo user with fresh demo sessions and return it."""
+    user = {"name": config.DEMO_USER, "sessions": demo_sessions()}
     storage.save_user(user)
     return user
 

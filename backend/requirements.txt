@@ -1,0 +1,14 @@
+# Backend: phone-link dashboard, Streamlit app, database and email. Installs the voice checker's packages too.
+-r ../voice_checker/requirements.txt
+
+# Phone link dashboard (python -m backend.dashboard)
+starlette>=0.40
+uvicorn>=0.30
+cryptography>=42          # self-signed HTTPS certificate, so phones allow the microphone
+segno>=1.6                # QR codes
+psycopg[binary]>=3.2      # PostgreSQL (the Docker database); SQLite needs nothing extra
+python-dotenv>=1.0        # reads .env
+
+# Streamlit app (streamlit run backend/streamlit_app/app.py)
+streamlit>=1.40           # st.audio_input
+plotly>=5.20

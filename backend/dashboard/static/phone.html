@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#faf8f3">
+  <title>VoiceDrift</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&display=swap">
+  <link rel="icon" href="/static/icon.svg">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="bar"><span class="logo">voicedrift</span><span class="meta" id="linked-to"></span></header>
+
+  <main class="phone-page">
+    <section class="view" id="v-loading"><p class="empty">Connecting to your laptop…</p></section>
+
+    <section class="view" id="v-pair" hidden>
+      <h1 class="title">Link this phone</h1>
+      <p class="lede">to <strong id="pair-name"></strong>’s VoiceDrift dashboard. Then you can record here and your
+        laptop checks your voice.</p>
+      <button class="pill lg wide" id="pair-btn">Link this phone <span aria-hidden="true">→</span></button>
+      <p class="form-error" id="pair-error" role="alert"></p>
+    </section>
+
+    <section class="view" id="v-unlinked" hidden>
+      <h1 class="title">Scan the code on your laptop</h1>
+      <p class="lede" id="unlinked-text"></p>
+    </section>
+
+    <section class="view" id="v-record" hidden>
+      <div class="tabs" role="tablist" aria-label="What to record">
+        <button role="tab" data-mode="reading" aria-selected="true" class="on">Read a text</button>
+        <button role="tab" data-mode="vowel" aria-selected="false">Hold “aaah”</button>
+      </div>
+      <div id="reading-part" class="view">
+        <div class="field">
+          <label for="text">Text to read</label>
+          <select class="u-input" id="text"></select>
+        </div>
+        <p class="passage" id="passage"></p>
+      </div>
+      <p class="passage" id="vowel-part" hidden>Take a breath and say <em>“aaah”</em> at a comfortable pitch and
+        loudness, as steadily as you can, for <em>3 to 5 seconds</em>.</p>
+      <p class="note" id="mode-off" hidden>This check isn't available yet: its model isn't trained on the laptop.</p>
+
+      <div class="recorder" id="recorder">
+        <button class="rec-btn" id="rec-btn" aria-label="Start recording"><i></i></button>
+        <div class="rec-info">
+          <span class="rec-time" id="rec-time">0:00</span>
+          <span class="meta" id="rec-hint">Tap to record</span>
+          <div class="meter" id="meter" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="clip" id="clip" hidden>
+        <audio id="player" controls preload="metadata"></audio>
+        <div class="clip-row"><span class="meta" id="clip-info"></span><button class="text-btn" id="discard">Discard</button></div>
+      </div>
+      <label class="upload link quiet">or upload a recording<input type="file" id="file" accept="audio/*" class="sr-only"></label>
+      <p class="form-error" id="rec-error" role="alert"></p>
+      <button class="pill lg wide" id="send" disabled><span id="send-label">Send to my dashboard</span> <span aria-hidden="true">→</span></button>
+    </section>
+
+    <section class="view" id="v-sent" hidden>
+      <h1 class="title" id="sent-title">Sent to your laptop</h1>
+      <div class="outcome" id="outcome" aria-live="polite"></div>
+      <button class="pill ghost wide" id="again">Record another <span aria-hidden="true">→</span></button>
+    </section>
+  </main>
+
+  <footer class="phone-foot">
+    <button class="text-btn" id="unlink" hidden>Unlink this phone</button>
+    <p>Research prototype, not a medical device. It says which voice condition a recording is most similar to, never
+      that you have it.</p>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/static/common.js"></script>
+  <script src="/static/phone.js"></script>
+</body>
+</html>

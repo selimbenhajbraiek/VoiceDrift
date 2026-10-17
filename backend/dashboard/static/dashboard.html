@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#faf8f3">
+  <title>Dashboard · VoiceDrift</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&display=swap">
+  <link rel="icon" href="/static/icon.svg">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar"><div class="topbar-in">
+    <span class="logo">voicedrift</span>
+    <div class="end">
+      <span class="meta" id="who"></span>
+      <button class="text-btn" id="signout">Sign out</button>
+    </div>
+  </div></header>
+
+  <main class="page">
+    <div class="page-head">
+      <h1 class="title" id="hello">Your dashboard</h1>
+      <p class="lede">Record on your phone and press <em>Send to my dashboard</em>. This laptop checks your voice
+        and emails you the result.</p>
+      <p class="offline" id="offline" hidden>Can't reach VoiceDrift. Is <code>python -m backend.dashboard</code> still running?</p>
+    </div>
+
+    <section class="section" aria-labelledby="link-title">
+      <h2 class="label" id="link-title">Your phone <span class="aside" id="link-aside">Same Wi-Fi as this laptop</span></h2>
+      <div class="rows" id="phones"></div>
+      <div class="pairing" id="pairing" hidden>
+        <div class="qr-col">
+          <div class="qr" id="qr" role="img" aria-label="QR code that links your phone to this dashboard"></div>
+          <p class="qr-meta"><span id="qr-expiry">Making a code…</span><button class="link quiet" id="qr-new">New code</button></p>
+          <div class="field" id="addr-field" hidden>
+            <label for="addr">Laptop address in the code</label>
+            <select class="u-input" id="addr"></select>
+          </div>
+        </div>
+        <div>
+          <ol class="steps">
+            <li><span><strong>Connect your phone to the same Wi-Fi</strong> as this laptop.</span></li>
+            <li><span><strong>Scan the code</strong> with your phone's camera and open the link.</span></li>
+            <li><span><strong>Your phone warns that the connection isn't private.</strong> That's expected: this laptop
+              made its own certificate. Tap <em>Advanced → Proceed</em> (Android) or <em>Show Details → visit this
+              website</em> (iPhone). You only do this once.</span></li>
+            <li><span><strong>Tap <em>Link this phone</em></strong>, then record and press <em>Send to my dashboard</em>.</span></li>
+          </ol>
+          <p class="address">The phone opens <code id="phone-url"></code>. Each code works once, for 5 minutes.</p>
+        </div>
+      </div>
+      <div class="link-actions">
+        <button class="pill ghost sm" id="link-another" hidden>Link another phone</button>
+        <button class="text-btn" id="hide-code" hidden>Hide the code</button>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="checks-title">
+      <h2 class="label" id="checks-title">Checks <span class="aside" id="engine"></span></h2>
+      <div class="rows" id="checks"></div>
+    </section>
+
+    <section class="section" aria-labelledby="email-title">
+      <h2 class="label" id="email-title">Email notifications</h2>
+      <div class="email-row">
+        <p id="email-text"></p>
+        <button class="pill ghost sm" id="email-test">Send a test email</button>
+      </div>
+    </section>
+
+    <p class="foot-note">Research prototype, not a medical device: it says which voice condition a recording is most
+      similar to, never that you have it. Recordings travel encrypted over your Wi-Fi, are checked on this laptop and
+      then deleted; only the results are kept, in <code>data/dashboard.db</code>.</p>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/static/common.js"></script>
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>
