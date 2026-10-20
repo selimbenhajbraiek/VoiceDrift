@@ -7,7 +7,6 @@ Read a short English text aloud; VoiceDrift measures your voice and compares it 
 > Audio is processed locally on your laptop CPU and is not stored or uploaded.
 
 ## How it works
-
 ```text
 recording ─► quality check ─► 4 biomarker modules ─► session JSON ─► drift vs. baseline ─► summary + charts
              (16 kHz mono,      embedding  (ECAPA voice signature)        (per user,       (templates, or
